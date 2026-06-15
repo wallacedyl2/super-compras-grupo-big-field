@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Compras Grupo Big Field</title>
+<style>
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#f5f7f5}
+header{background:linear-gradient(135deg,#0f5c2e,#1f8a4c);color:#fff;padding:30px;text-align:center}
+header h1{margin:0}
+header p{opacity:.9}
+.container{max-width:1300px;margin:auto;padding:20px}
+#pesquisa{width:100%;padding:14px;border-radius:10px;border:1px solid #ccc;margin-bottom:20px}
+.categoria{margin-top:25px}
+.categoria h2{background:#146c2e;color:#fff;padding:12px;border-radius:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:15px}
+.card{background:#fff;border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card h3{font-size:15px;min-height:55px}
+.card input{width:100%;padding:8px;margin:8px 0}
+.btn{background:#146c2e;color:#fff;border:none;padding:10px;width:100%;border-radius:8px;cursor:pointer}
+#pedido{background:#fff;padding:20px;border-radius:12px;margin-top:25px}
+.itempedido{margin:8px 0}
+.remove{background:#c62828;color:#fff;border:none;padding:5px 8px;border-radius:5px}
+.whats{background:#25D366;color:#fff;border:none;padding:15px;width:100%;border-radius:10px;font-size:16px}
+.limpar{background:#dc3545;color:#fff;border:none;padding:10px;border-radius:8px;margin:10px 0}
+.float{position:fixed;right:20px;bottom:20px;background:#25D366;color:#fff;text-decoration:none;padding:15px;border-radius:50%;font-size:24px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>Super Compras Grupo Big Field</h1>
+<p>Catálogo Comercial • Panificação • Confeitaria • Food Service</p>
+</header>
+<div class="container">
+<input id="pesquisa" placeholder="Pesquisar produtos..." onkeyup="filtrar()">
+<div id="catalogo"></div>
+
+<div id="pedido">
+<h2>Meu Pedido</h2>
+<ul id="lista"></ul>
+<button class="limpar" onclick="limparPedido()">Limpar Pedido</button>
+<input id="nome" placeholder="Nome" style="width:100%;padding:10px;margin:5px 0">
+<input id="telefone" placeholder="Telefone" style="width:100%;padding:10px;margin:5px 0">
+<button class="whats" onclick="enviar()">Enviar Pedido pelo WhatsApp</button>
+</div>
+</div>
+
+<a class="float" href="https://wa.me/5521999542520" target="_blank">🟢</a>
+
+<script>
+const categorias={
+"Bolos e Misturas":["CAKE CHOCOLATE 2KG","CAKE NEUTRO 2KG","CAKE LARANJA 2KG","CAKE MILHO 2KG","CAKE CENOURA 2KG","CAKE RED VELVET 2KG"],
+"Panificação":["FARINHA TRIGO BONINA EXTRA CLARA 25KG","MISTURA PÃO MACIO 10KG","MISTURA PÃO DE MILHO 10KG","MISTURA PÃO DE ALHO 10KG","MISTURA PÃO AUSTRALIANO 5KG","MISTURA PÃO DE BATATA 10KG"],
+"Confeitaria":["NUTELLA BALDE 3KG","DOCE DE LEITE ITAMBÉ 5KG","CHANTILLY BETTERCREAM TRADICIONAL 907ML","CHANTILLY BETTERCREAM CHOCOLATE 907ML"],
+"Recheios":["RECHEIO CHOCOLATE 4KG","RECHEIO MORANGO 4KG","RECHEIO MARACUJA 4KG","RECHEIO COCO 4KG","RECHEIO LIMÃO 4KG"],
+"Ingredientes":["COCO RALADO FLOCOS 5KG","COCO RALADO FINO 5KG","AMENDOIM TORRADO PICADO 1KG","ERVA DOCE GRAO 1KG","OREGANO 250GR"]
+};
+let pedido=[];
+const cat=document.getElementById('catalogo');
+
+for(let c in categorias){
+ let h=`<div class='categoria'><h2>${c}</h2><div class='grid'>`;
+ categorias[c].forEach(p=>{
+  let id=p.replace(/\W/g,'');
+  h+=`<div class='card' data-nome='${p}'><h3>${p}</h3><input type='number' min='1' value='1' id='${id}'><button class='btn' onclick="add('${p}','${id}')">Adicionar</button></div>`;
+ });
+ h+='</div></div>';
+ cat.innerHTML+=h;
+}
+
+function add(prod,id){
+ pedido.push({produto:prod,qtd:document.getElementById(id).value});
+ atualizar();
+}
+function atualizar(){
+ let ul=document.getElementById('lista'); ul.innerHTML='';
+ pedido.forEach((i,x)=>{
+  ul.innerHTML+=`<li class='itempedido'>${i.produto} - <input type='number' min='1' value='${i.qtd}' onchange='pedido[${x}].qtd=this.value'> <button class='remove' onclick='rem(${x})'>Excluir</button></li>`;
+ });
+}
+function rem(i){pedido.splice(i,1);atualizar();}
+function limparPedido(){pedido=[];atualizar();}
+function enviar(){
+ let txt='Olá, gostaria de fazer o seguinte pedido:%0A%0A';
+ pedido.forEach(i=>txt+=`• ${i.produto} - ${i.qtd} unidade(s)%0A`);
+ txt+=`%0ANome: ${nome.value}%0ATelefone: ${telefone.value}`;
+ window.open('https://wa.me/5521999542520?text='+txt,'_blank');
+}
+function filtrar(){
+ let f=pesquisa.value.toUpperCase();
+ document.querySelectorAll('.card').forEach(c=>{
+ c.style.display=c.dataset.nome.toUpperCase().includes(f)?'block':'none';
+ });
+}
+</script>
+</body>
+</html>
